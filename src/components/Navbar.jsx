@@ -22,7 +22,7 @@ export default function Navbar() {
         />
         <div className="absolute inset-x-0 top-0 mx-auto max-w-[1400px] flex items-center justify-between px-[40px] py-[26px] text-cream">
           <img src={kpiEmblem} alt="Емблема КПІ" className="h-[52px] w-auto" />
-          <nav className="hidden md:flex items-center gap-[36px] font-mono text-[19px]">
+         <nav className="hidden md:flex items-center gap-[36px] font-mono text-[19px] absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             {nav.map((item) => (
               <a
                 key={item.href}
