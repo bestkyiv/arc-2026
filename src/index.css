@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Antique Olive';
+  src: url('/fonts/AntiqueOlive-Bold.ttf') format('truetype');
+  font-weight: 700 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+html {
+  scroll-behavior: smooth;
+  /* Site-wide scale-up: Tailwind's spacing/typography utilities are
+     rem-based, so bumping the root font-size enlarges nearly every
+     element (text, padding, gaps, widths) proportionally by ~45%
+     without touching each component. The header is deliberately
+     excluded from this (see Navbar.jsx, which uses fixed px values
+     instead of rem so it isn't affected) and scaled 2x on its own. */
+  font-size: 145%;
+}
+
+section[id] {
+  scroll-margin-top: 200px;
+}
+
+body {
+  /* Parchment base colour + semi-transparent grunge texture on top.
+     The texture lives in public/, so it is referenced by its absolute
+     URL (not a relative '../' path, which does not resolve there).
+     The *-trim.webp copy has the 14px transparent border of the original
+     cropped off, so adjacent tiles meet without light seams. */
+  background-color: #d4c49e;
+  background-image: url('/figma-assets/vecteezy_grunge-texture-trim.webp');
+  background-repeat: repeat;
+  background-size: 1100px auto;
+  background-blend-mode: multiply;
+  color: #3f1a03;
+  font-family: 'Roboto Mono', ui-monospace, monospace;
+}
+
+h1, h2, h3, .font-display {
+  font-family: 'Antique Olive', ui-rounded, sans-serif;
+}
+
+/* Organizer portrait: circular photo with a copper ring, set inside a
+   larger gear-shaped decorative backing (matches the mockup — the gear
+   teeth belong to the backing plate, not the photo itself). */
+.gear-frame {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background-image: url('/figma-assets/gear-tile.webp');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.gear-frame img {
+  position: absolute;
+  inset: 14%;
+  width: 72%;
+  height: 72%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 5px solid #8a5a2b;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+
+/* Background-image driven banner shapes (real Figma assets) */
+.shape-banner {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100% 100%;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 28s linear infinite;
+}
+
+/* ---------- Q&A tile (питання → відповідь, шестерні крутяться) ---------- */
+.qa-tile {
+  --qa-gear: clamp(70px, 16vw, 170px);
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  min-height: 220px;
+  overflow: hidden; /* ріже шестерні по краю блока — видно лише половину */
+  cursor: pointer;
+  text-align: center;
+  /* коричневий фон + золота рамка з макета (9-slice, рамка 5px не розтягується) */
+  border: 5px solid #d4ab26;
+  border-image: url('/figma-assets/qa-box.png') 5 fill / 5px stretch;
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+.qa-tile:hover { filter: brightness(1.08); }
+.qa-tile:active { transform: scale(0.99); }
+.qa-tile:focus-visible { outline: 3px solid #f8e7c4; outline-offset: 3px; }
+
+.qa-gear {
+  position: absolute;
+  top: 50%;
+  /* розмір шестерні фіксований, щоб вона не росла разом із довгим текстом */
+  height: var(--qa-gear);
+  aspect-ratio: 1 / 1;
+  pointer-events: none;
+  user-select: none;
+  /* кут задається з JS через --qa-rot; центр шестерні лежить на краю блока */
+  transform: translate(-50%, -50%) rotate(var(--qa-rot, 0deg));
+  transition: transform 0.9s cubic-bezier(0.45, 0, 0.2, 1);
+}
+.qa-gear-left  { left: 0; }
+.qa-gear-right { right: 0; transform: translate(50%, -50%) rotate(var(--qa-rot, 0deg)); }
+
+.qa-text {
+  grid-area: 1 / 1;
+  /* відступ з боків = половина шестерні + запас, текст не заїжджає на неї */
+  padding-inline: calc(var(--qa-gear) / 2 + 14px);
+  line-height: 1.3;
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+.qa-text[data-visible='false'] {
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+}
+.qa-text[data-visible='true'] {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.3s; /* з'являється, коли шестерні вже розкрутились */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .qa-gear, .qa-text { transition: none !important; }
+}
